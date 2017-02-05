@@ -1,0 +1,411 @@
+
+
+# 内理流程
+
+修改时间：20170119 13:24
+
+
+
+[TOC]
+
+# 一、流程说明
+
+> 装船的时候听理货才着箱
+>
+> 卸船的时候听理货的指令后集卡才能走
+
+
+
+## 一、登录
+
+输入：理货用户名、密码
+
+动作：点击登录，调用TOS接口进行验证，登录成功进入作业信息绑定界面。
+
+
+
+## 二、作业信息绑定
+
+输入：QC号、捆扎工号、左右舷靠、作业贝位、装卸船类型、默认作业车道，船期信息（船名、航次，调用TOS船期接口获取）。
+
+动作：通过上述信息获取当前作业贝的指令队列信息，如果绑定成功，主机界面的对应桥吊就显示相应信息。
+
+界面如外理登录成功界面。
+
+桥吊的状态块上需要显示：桥吊号、船名航次、贝位、已经完成和计划数，装卸，当前车道，作业进程，最后一个指令时间，箱号车号，作业异常提示（卸船：吊具开锁后时间超过，装船是吊具在陆侧，时间超过阀值，本贝有后续作业，但上一指令时间也当前 时间超过时间），灯：有指令基础信息、验证通过、有验残，指令核销。
+
+类似如下图：
+
+![屏幕快照 2017-01-14 20.45.38](./屏幕快照 2017-01-14 20.45.38.png)
+
+
+
+
+
+## 三、作业流程
+
+>目前前提：装卸船由理货来切换，车道由理货来切换    （此前提于2017-01-23推翻）
+
+
+
+#### 装船
+
+如果有箱识信号进来，与当前作业贝的可作业指令集进行匹配，如果配对成功，就验证通过
+
+​	通过播报系统，通过桥面手：船上位置
+
+​	通知桥吊司机（吊具在陆侧并且是开锁状态）：装船箱车道号
+
+​	吊具着箱时，通知桥吊司机：当前箱船上目的位置
+
+​	拉升时核销指令，即调用TOS接口进行指令确认。
+
+如果是本贝位箱，但当前不能装，
+
+​	保存识别信息（箱号、车号）、车道号
+
+​	界面提示，让内理人工切换车道（QC色块跳红，声音提示：QCXX N号车道的箱不能作业，请切换车道。）
+
+​	切换车道后通知桥面手、桥吊司机当前作业车道信息。
+
+
+
+当前作业车道指令确认完，如果当前 车道不是默认车道，需要在界面上提醒理货：当前作业不是默认作业车道！
+
+
+
+QC界面允许用户设置默认车道、切换车道、独立设置该桥吊作业等待超时的阀值、异常时箱号集卡号的修正、大件、舱盖板作业的输入。
+
+
+
+#### 卸船
+
+> 前提：内理不干涉桥吊司机卸在哪个车道。集卡司机在内理把箱号确认完(可能是指令确认，也包含指令确认不掉，需要得到内理允许走的情况）才能走。
+
+如果有箱识信号进来，与当前作业贝的可作业指令集进行匹配，如果配对成功（指令没有或者指令核销不了），就验证通过，	
+
+​	吊具陆侧开锁拉升时，调用TOS指令确认接口进行确认。
+
+否则：
+
+​	吊具陆侧开锁拉升时，如果没有箱识信息过来，QC色块变红，且提醒内理人工介入操作。
+
+
+
+#### 综合、使用场景
+
+语音播报：
+
+​	播报车道：
+
+​		装船：（箱号识别结果与TOS验证的结果）
+
+​			空吊具向海侧过后大梁、从海侧过前大梁时，向桥吊司机和桥面手播放车道作业车道号、可装和不可装
+
+​			空吊具在前大梁和后大梁之间，作业车道切换时，向桥吊司机和桥面手播放车道作业车道号、可装和不可装
+
+​			【优化，下一版本实现】吊具在陆侧着箱开锁时，如果一下吊是陆侧装船箱（之前已经检测到，有保存的），那就播报该车道可装。
+
+​			立即向桥面手播放车道作业车道号、可装和不可装
+
+
+
+​		卸船：不需要播报车道号。
+
+​	播报箱位：
+
+​		拉升时、及从陆侧过前大梁时
+
+
+
+只播报列位，不需要层位。报:"00列，海侧N!"
+
+
+
+作业等待超时：
+
+​	如果作业时间超过多少时间的时候提醒。
+
+
+
+## 四、作业集卡修正
+
+允许理货针对当前已经确认的卸船指令的运输中的集卡的集卡号进行修改。
+
+
+
+## 五、作业结果审核
+
+需要对当前作业贝、船的作业结果显示出来。
+
+
+
+
+
+# 六、接口
+
+
+
+## 6.1 CTOS接口
+
+### 接口1（UserLogin）:登录接口
+
+接口调用样例：bool  UserLogin(string UserName,string Password,out string Ticket,out string ErrMsg)
+参数说明1：UserName(用户名)。
+参数说明2：Password(密码)。
+参数说明3：TallyDeviceNo(手持设备号)。
+参数说明4：Ticket(用户票据)，登录成功后Tos返回的票据信息，为后面的接口提供支持。
+参数说明5：ErrMsg(错误信息)，登录失败后Tos返回的错误信息。
+接口返回值：True(成功登录)，False(登录失败)。
+接口调用频率：系统初始化时调用一次。
+
+
+
+### 接口2（QeuryWorkItem）:指令列表接口
+
+接口调用样例：string QueryWorkItem(string Ticket, string workPointNo, string velaliase, out string ErrMsg)
+参数说明1：Ticket(用户票据)，登录时获得的用户票据。
+参数说明2：workPointNo(工作点)
+参数说明3：velaliase(船别名)
+参数说明4：ErrMsg(错误信息)
+接口返回值：（返回xml字符串，具体如下所示）
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<WorkItemList>
+<WorkItem>
+<ROWNUM>1</ROWNUM>
+<WORKQUEUENO>424680</WORKQUEUENO>
+<WORKPOINTNO>QC02</WORKPOINTNO>
+<WORKQUEUENAME>YRLHE0113-01640BU</WORKQUEUENAME>
+<QUEUETYPE>U</QUEUETYPE>
+<VELALIASE>YRLHE0113</VELALIASE>
+<JOBMODEL>S</JOBMODEL>
+<QUEUESTATUS>C</QUEUESTATUS>
+<WORKITEMNO>11181290</WORKITEMNO>
+<CONTAINERRECID>9595096</CONTAINERRECID>
+<CONTAINERNO>HJCU1166386</CONTAINERNO>
+<SOURCEPOS>0160404</SOURCEPOS>
+<TARGET>2D180401</TARGET>
+<GETCONTAINERCHE>QC14</GETCONTAINERCHE>
+<CARRYCONTAINERCHE>T54</CARRYCONTAINERCHE>
+<PUTCONTAINERCHE>R28</PUTCONTAINERCHE>
+…….
+…….
+</WorkItem>
+</WorkItemList>
+```
+
+
+
+### 接口3（QueryContainerOnShipByVelaliase）:船上箱查询接口
+
+接口调用样例：string QueryContainerOnShipByVelaliase(string Ticket,string velaliase,out string ErrMsg))
+参数说明1：Ticket(用户票据)，登录时获得的用户票据。
+参数说明2：velalise(船别名)
+参数说明3：ErrMsg(错误信息)
+接口返回值：（返回xml字符串，具体如下所示）
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<ContainerList>
+<Container>
+<CARGOWEIGHT>0</CARGOWEIGHT>
+<CONTAINERHEIGHT>8.6</CONTAINERHEIGHT>
+<CONTAINERNO>CCLU3305474</CONTAINERNO>
+<CONTAINEROWNER>CSN</CONTAINEROWNER>
+<CONTAINERRECID>9599629</CONTAINERRECID>
+<CONTAINERSIZE>20</CONTAINERSIZE>
+<CONTAINERTYPE>GP</CONTAINERTYPE>
+<DANGERLEVER></DANGERLEVER>
+<EMPTYFULL>E</EMPTYFULL>
+<FINALPORT></FINALPORT>
+<GRADEID>HAIG</GRADEID>
+<GROSSWEIGHT>2300</GROSSWEIGHT>
+<INAIM>T</INAIM>
+<INBOUNDVOY>2007S</INBOUNDVOY>
+<INEVESSELNAME>UCMBA</INEVESSELNAME>
+<INTIME></INTIME>
+…….
+…….
+</Container>
+</ContainerList>
+```
+
+
+
+
+
+### 接口4（ConfirmDish）:确认卸船接口
+
+接口调用样例：bool ConfirmDish(string Ticket, string containernoList, string putonshorelist, string carrychelist, string posontrucklist, string qcDeviceNo, string QcDriver, string tallyclerk, string Packer, out string ErrMsg)
+参数说明1：Ticket(用户票据)，登录时获得的用户票据。
+参数说明2：velaliase(船别名)
+参数说明3：containernolist(箱号列表)
+参数说明4：putonshorelist(是否卸岸边列表)
+参数说明5：carrychelist(拖车列表)
+参数说明6：putontrucklist(车上位置列表)
+参数说明7：qcDeviceNo(QC设备号)
+参数说明8：QcDriver(QC司机)
+参数说明9：tallyclerk(理货用户)
+参数说明10：Packer(捆扎工)
+参数说明11：ErrMsg(错误信息)
+接口返回值：（装船成功返回true，失败返回false）
+
+
+
+### 接口5（ConfirmLoad）:确认装船接口
+
+1.1接口调用样例：bool ConfirmLoad(string Ticket, string containernoList, string qcDeviceNo, string QcDriver, string tallyclerk, string Packer, out string ErrMsg
+参数说明1：Ticket(用户票据)，登录时获得的用户票据。
+参数说明2：velaliase(船别名)
+参数说明3：containernolist(箱号列表)
+参数说明4：qcDeviceNo(QC设备号)
+参数说明5：QcDriver(QC司机)
+参数说明6：tallyclerk(理货用户)
+参数说明7：Packer(捆扎工)
+参数说明8：ErrMsg(错误信息)
+接口返回值：（装船成功返回true，失败返回false）
+
+
+
+### 接口6（LogoutWork）:退出登录。
+
+1.1接口调用样例：bool LogoutWork(string Ticket, string TallyDeviceNo, string TallyClerk, out string ErrMsg)
+参数说明1：Ticket(用户票据)，登录时获取的票据
+参数说明2：TallyDeviceNo(手持设备号)。
+参数说明3：TallyClerk(登录用户)。
+参数说明4：ErrMsg(错误信息)
+接口返回值：True(成功)，False(失败)。
+
+
+
+### 接口7（）船期信息接口
+
+船期信息接口
+返回昼夜计划的船期信息：船名、航次、左右舷靠、船别名
+
+
+
+### 接口8（）船舶结构接口
+
+返回船舶结构信息
+
+
+
+
+
+## 6.2 播报系统接口
+
+
+
+接口地址：[http://10.207.180.55:8081/WebService1.asmx](http://10.207.180.55:8081/WebService1.asmx)
+
+接口名称: [push_tag](http://10.207.180.55:8081/WebService1.asmx?op=push_tag) (按组推送)
+
+接口参数：string title(标题),string mess（推送内容）,string tag（组）,目前tag输入项为：QC01到QC14,QC07A,QC11A
+
+调用成功返回true,失败为false; 备注：true和false 为string
+
+
+
+
+
+
+
+# 参考信息（历史讨论结果）：
+
+
+
+2017年1月11日 
+
+智能内理方案（张冉）：
+
+集卡到位，
+
+智能识别
+
+结果提交TOS，是否能装
+
+     能装，通知桥面手，船上位置，为了装锁，验残
+
+     通知桥吊司机，装船陆侧车道
+
+     吊具着相时，播报船侧具体位置
+
+     拉升时核销指令，
+
+不能装，如果是本船本贝作业，保存箱号与车号
+
+      按优先顺序规则通知桥面手，切换到空车道（暂时由内理人工介入操作）
+
+      摄像头自动切换到该车道，等待集卡到位
+
+       如果集卡到位，按开始流程执行
+
+      还是不能装，按本分支执行，切换其它道。
+
+非本船本贝，则抛弃
+
+拉升后，判断，之前记录保存所有车道箱号，优先装那个
+
+切换到该车道，重新识别与比对是否一样
+
+      一样，按能装流程执行
+
+不一样，判断能装否，能装则执行，否则再判断其它所有车道
+
+直到已记录车道全部做完。并切换到默认车道。
+
+卸船多车道空车等待状态，人工介入。
+
+当前车道不能做就人工介入
+
+接口：指令的集卡修正接口
+
+人工介入的情况
+
+1、箱号箱型集卡号没来
+
+2、
+
+3、作业流畅性显示，作业时间超过多少时间的时候提醒。
+
+4、作业情况合对
+
+5、大件作业
+
+窗口：
+
+箱号箱型异常
+
+车道异常，车道切换
+
+作业流畅性异常
+
+贝位作业后的确认
+
+大件舱盖板作业
+
+正常的作业录入信息
+
+当前核销队列，关注的桥吊整体信息
+
+每一个方块：
+
+异常操作界面一个搞定
+
+最左边队列，最下面是已经核销队列，上面是可装卸的集卡队列
+
+左右是箱号识别的几个图片，箱面图片要大一点。
+
+箱号、车号、等修改的按钮。
+
+切换车道，大小箱，前中后。
+
+调用异常桥吊的时候，右手边的显示 器变成对应桥吊的画面。
+
+作业完后的确认，需要贝位图。与实际的差异，下面要有差异列表，差异列表需要人工修改好，确认好。舱盖板多少个。
+
+
+
