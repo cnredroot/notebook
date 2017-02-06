@@ -1,9 +1,9 @@
 # Site settings
-title: 无修而修 修而无修
-SEOTitle: Eric Gu's Blog | 轻寒小站
-header-img: img/home-bg-art.jpg
+title: 无修而修
+SEOTitle: Eric Gu's Blog | 先吃软乎乎的肚皮的小站
+header-img: img/ctnterminal.png
 email: gkj@gkj.cc
-description: "架构师 | 这里是 Eric 的个人博客，独立站点，用代码调戏人生的全栈攻城狮。"
+description: "架构师 | 这里是 先吃软乎乎的肚皮 的个人博客，独立站点，用心感受世界。"
 keyword: "Eric, Eric Gu, Eric Gu博客, 博客, 个人网站, 互联网, 产品, C#, Azure"
 url: "http://blog.gkj.cc"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
@@ -107,7 +107,7 @@ kramdown:
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "用代码调戏人生的全栈攻城狮。"
+sidebar-about-description: "修而无修、无修而修"
 sidebar-avatar: /img/avatar-hy.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
