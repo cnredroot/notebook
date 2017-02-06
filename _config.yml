@@ -3,7 +3,7 @@ title: 无修而修 修而无修
 SEOTitle: Eric Gu's Blog | 轻寒小站
 header-img: img/home-bg-art.jpg
 email: gkj@gkj.cc
-description: "架构师 | 羽毛球爱好者 | 这里是 Eric 的个人博客，独立站点，用代码调戏人生的全栈攻城狮。"
+description: "架构师 | 这里是 Eric 的个人博客，独立站点，用代码调戏人生的全栈攻城狮。"
 keyword: "Eric, Eric Gu, Eric Gu博客, 博客, 个人网站, 互联网, 产品, C#, Azure"
 url: "http://blog.gkj.cc"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
@@ -23,11 +23,11 @@ defaults:
 
 # SNS settings
 RSS: true
-weibo_username:     nbpost
-zhihu_username:     hollisyao
+weibo_username:     AppFabric
+zhihu_username:     钱裁缝
 github_username:    cnredroot
 #twitter_username:  hollisyao
-facebook_username:  hollisyao
+#facebook_username:  hollisyao
 # linkedin_username:  firstname-lastname-idxxxx
 
 
@@ -39,7 +39,7 @@ exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","READM
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
 
 # Search settings
-azuresearch: true  #是否启用Azure Search搜索
+azuresearch: false  #是否启用Azure Search搜索
 
 
 # Gems
