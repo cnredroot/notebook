@@ -5,7 +5,7 @@ header-img: img/ctnterminal.jpg
 email: gkj@gkj.cc
 description: "架构师 | 这里是 先吃软乎乎的肚皮 的个人博客，独立站点，用心感受世界。"
 keyword: "Eric, Eric Gu, Eric Gu博客, 博客, 个人网站, 互联网, 产品, C#, Azure"
-url: "http://blog.gkj.cc"              # your host, for absolute URL
+url: "http://gkj.net.cn"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
 # 为站点内的所有Page和Post设置参数
@@ -101,7 +101,7 @@ kramdown:
 
 # Google Analytics
 # ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
-# ga_domain: hollisyao.me
+# ga_domain: 
 
 
 
