@@ -2,7 +2,7 @@
 layout:     post
 title:      "test"
 subtitle:   "test2"
-author:     "Hollis Yao"
+author:     "作者名"
 header-img: "img/posts/Azure-Search-Header.png"
 catalog: true
 categories: 
