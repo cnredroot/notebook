@@ -24,7 +24,7 @@ defaults:
 # SNS settings
 RSS: true
 weibo_username:     AppFabric
-zhihu_username:     钱裁缝
+zhihu_username:     qing-han
 github_username:    cnredroot
 #twitter_username:  hollisyao
 #facebook_username:  hollisyao
