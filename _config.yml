@@ -100,8 +100,8 @@ kramdown:
 # ba_track_id: 62d2cf69946e4f0efedabfef6d45d181
 
 # Google Analytics
-# ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
-# ga_domain: 
+ga_track_id: 'UA-91567115-1'            # Format: UA-xxxxxx-xx
+ga_domain: gkj.net.cn
 
 
 
