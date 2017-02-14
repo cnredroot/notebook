@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "基于Docker的DevOps实战培训"
-subtitle:   "随堂笔记
+subtitle:   "随堂笔记"
 author:     "先吃软乎乎的肚皮"
 header-img: "img/ctnterminal.jpg"
 catalog: true
